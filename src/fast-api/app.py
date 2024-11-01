@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, HTTPException
 from models.product import Product, ProductRequest
 
 products = [
     Product(id=1, name='macbook', description='really great pc', price=1000.0),
-    Product(id=2, name='mouse', description='really great pc', price=10.0),
-    Product(id=3, name='keyboard', description='really great pc', price=100.0)
+    Product(id=2, name='mouse', description='really great mouse', price=10.0),
+    Product(id=3, name='keyboard',
+            description='really great keyboard', price=100.0)
 ]
 
 app = FastAPI()
@@ -26,11 +27,12 @@ def get_product_by_id(id):
         if product.id == int(id):
             return product
 
-        return {'detail': 'Product not found.'}
+        raise HTTPException(status_code=404, detail={
+                            'message': 'Product not found.'})
 
 
 @app.post('/api/products')
-def save_product(product: ProductRequest):
+def create_product(product: ProductRequest):
     new_product = Product(id=len(products) + 1, **product.dict())
     products.append(new_product)
     return new_product
@@ -43,7 +45,8 @@ def update_product(id, updated_product: ProductRequest):
             products[index] = Product(id=id, **updated_product.dict())
             return products[index]
 
-        return {'detail': 'Product not found.'}
+        raise HTTPException(status_code=404, detail={
+            'message': 'Product not found.'})
 
 
 @app.delete('/api/products/{id}')
@@ -53,4 +56,5 @@ def delete_product_by_id(id):
             products.remove(product)
             return Response(status_code=204)
 
-        return {'detail': 'Product not found.'}
+        raise HTTPException(status_code=404, detail={
+            'message': 'Product not found.'})

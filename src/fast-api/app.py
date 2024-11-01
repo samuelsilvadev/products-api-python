@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from models.product import Product, ProductRequest
 
 products = [
@@ -34,3 +34,13 @@ def save_product(product: ProductRequest):
     new_product = Product(id=len(products) + 1, **product.dict())
     products.append(new_product)
     return new_product
+
+
+@app.delete('/api/products/{id}')
+def delete_product_by_id(id):
+    for product in products:
+        if product.id == int(id):
+            products.remove(product)
+            return Response(status_code=204)
+
+        return {'detail': 'Product not found.'}

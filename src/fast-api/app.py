@@ -20,6 +20,15 @@ def get_products():
     return products
 
 
+@app.get('/api/products/{id}')
+def get_product_by_id(id):
+    for product in products:
+        if product.id == int(id):
+            return product
+
+        return {'detail': 'Product not found.'}
+
+
 @app.post('/api/products')
 def save_product(product: ProductRequest):
     new_product = Product(id=len(products) + 1, **product.dict())

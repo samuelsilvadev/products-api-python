@@ -36,6 +36,16 @@ def save_product(product: ProductRequest):
     return new_product
 
 
+@app.put('/api/products/{id}')
+def update_product(id, updated_product: ProductRequest):
+    for index, product in enumerate(products):
+        if product.id == int(id):
+            products[index] = Product(id=id, **updated_product.dict())
+            return products[index]
+
+        return {'detail': 'Product not found.'}
+
+
 @app.delete('/api/products/{id}')
 def delete_product_by_id(id):
     for product in products:
